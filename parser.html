@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>账号解析器 · 自动删除Token字段</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', monospace;
+            max-width: 1100px;
+            margin: 32px auto;
+            padding: 20px;
+            background: #f0f4f8;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.02);
+            padding: 28px;
+            margin-bottom: 28px;
+            transition: all 0.2s;
+        }
+        h2 {
+            margin-top: 0;
+            color: #0f172a;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detected-format {
+            background: #eef2ff;
+            border-radius: 40px;
+            padding: 6px 16px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #1e40af;
+            font-weight: 500;
+            display: inline-block;
+            border: 1px solid #cbdff2;
+        }
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            resize: vertical;
+            box-sizing: border-box;
+            background: #fefefe;
+            transition: 0.2s;
+            line-height: 1.5;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+        button:hover { background: #2563eb; transform: translateY(-1px); }
+        .clear-btn { background: #64748b; box-shadow: none; }
+        .clear-btn:hover { background: #475569; transform: translateY(-1px); }
+        .output {
+            background: #fafcff;
+            border-radius: 24px;
+            padding: 20px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 13.5px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            border-left: 5px solid #3b82f6;
+            margin-top: 20px;
+            transition: 0.1s;
+            line-height: 1.5;
+        }
+        .error { 
+            color: #b91c1c; 
+            background: #fee9e6; 
+            border-left-color: #dc2626; 
+        }
+        .label { font-weight: 700; color: #0c4a6e; }
+        code { background: #eef2ff; padding: 3px 8px; border-radius: 20px; font-size: 0.85em; font-family: monospace; }
+        .format-hint {
+            font-size: 12.5px;
+            color: #334155;
+            margin-top: 16px;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .pre-clean {
+            background: #ecfdf5;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            color: #065f46;
+            font-family: monospace;
+        }
+        .copy-btn-inside {
+            background: #10b981;
+            margin-top: 16px;
+            padding: 6px 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+        }
+        .tag-badge {
+            background: #e6f0ff;
+            border-radius: 16px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: #0369a1;
+        }
+        footer {
+            text-align: center;
+            font-size: 12px;
+            color: #62748c;
+            margin-top: 16px;
+        }
+        .warning-note {
+            background: #fef9e3;
+            border-left: 3px solid #eab308;
+            padding: 8px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #854d0e;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>🔐 账号解析器 · 自动删除Token字段</h2>
+    <div style="margin-bottom: 10px;">
+        <span class="detected-format" id="detectedFormat">⚙️ 等待输入或粘贴</span>
+    </div>
+    <div class="pre-clean">
+        🧹 自动清理多余分隔符（连续多个 <code>----</code> 或 <code>|</code> 合并，去除首尾无效符号）<br>
+        ✂️ <strong>特别规则：解析完毕后自动删除最后的 token 字段（不保留在结果中）</strong>
+    </div>
+    <textarea id="inputText" rows="4" placeholder="请粘贴以下任意一种格式（自动识别）：
+格式1（6段横线，第4段含竖线嵌套，token将被自动删除）:
+用户名----密码----验证邮箱----邮箱密码|辅邮|辅邮密码----2FA(密钥)----token
+
+格式2（6段横线，纯字段，token将被自动删除）:
+用户名----密码----邮箱----邮箱密码----2FA(密钥)----token
+
+示例1（嵌套）:
+testuser----pass123----verify@xx.com----mailpwd|backup@xx.com|backuppwd----123456----ignore_this_token
+
+示例2（纯横线）:
+alice----alice123----alice@mail.com----emailpass----2FAcode----final_token_removed"></textarea>
+    <div class="button-group">
+        <button id="parseBtn">✨ 解析 & 删除Token</button>
+        <button id="clearBtn" class="clear-btn">🗑️ 清空所有</button>
+    </div>
+    <div class="format-hint">
+        📌 <strong>支持的两种格式（解析后均自动剔除最后的token字段）</strong><br>
+        <hr style="margin: 10px 0;">
+        🅰️ <strong>格式B（横线+嵌套）</strong>：<br>
+        <code>用户名----密码----验证邮箱----邮箱密码|辅邮|辅邮密码----2FA(密钥)----token</code><br>
+        → 解析后自动删除token，最终输出带标签（无token）：<strong>用户名：xxx----密码：xxx----验证邮箱：xxx----邮箱密码：xxx----辅邮：xxx----辅邮密码：xxx----2FA(密钥)：xxx</strong><br><br>
+        🅱️ <strong>格式X（6段纯横线）</strong>：<br>
+        <code>用户名----密码----邮箱----邮箱密码----2FA(密钥)----token</code><br>
+        → 解析后自动删除token，最终输出带标签（无token）：<strong>用户名：xxx----密码：xxx----邮箱：xxx----邮箱密码：xxx----2FA(密钥)：xxx</strong><br><br>
+        ✨ <strong>自动清理</strong>：无论输入带有额外 <code>----</code> 或多余的 <code>|</code>（如 <code>||||</code>），系统都会先清洗为标准形态再解析，容错性更好。<br>
+        ⚠️ <strong>核心变更</strong>：最后一段 token 字段仅用于解析校验，但不会出现在最终带标签的结果中。
+    </div>
+</div>
+
+<div class="card">
+    <h2>📄 标准化带标签结果（已删除Token） <span class="tag-badge">标签间用 "----" 连接</span></h2>
+    <div id="outputArea" class="output">✨ 粘贴内容后点击「解析」，token字段会被自动移除...</div>
+</div>
+<footer>⚡ 自动合并多余分隔符 | 精准匹配双格式 | 最后token不保留 | 一键复制结果</footer>
+
+<script>
+    // 存储当前最新的解析结果，供复制按钮使用
+    let currentResultText = "";
+
+    // ---------- 智能清洗函数：合并连续横线/竖线，移除首尾无效分隔符 ----------
+    function smartCleanSeparators(raw) {
+        if (!raw) return "";
+        let trimmed = raw.trim();
+        if (trimmed === "") return "";
+
+        // 1. 合并连续的 "----" (两个以上标准横线组合)
+        let cleaned = trimmed.replace(/(----){2,}/g, '----');
+        // 2. 合并畸变横线: 3个以上横线(例如---, -----) 统一转成 ----
+        cleaned = cleaned.replace(/---+/, '----');
+        // 3. 合并连续的竖线 (多个 |||| 合并为单个 | )
+        cleaned = cleaned.replace(/\|{2,}/g, '|');
+        
+        // 4. 处理交叉混合的无意义组合
+        cleaned = cleaned.replace(/\|----/g, '----');
+        cleaned = cleaned.replace(/----\|/g, '----');
+        cleaned = cleaned.replace(/\|\-\-\-\-/g, '----');
+        
+        // 5. 二次合并残留连续分隔符
+        cleaned = cleaned.replace(/(----){2,}/g, '----');
+        cleaned = cleaned.replace(/\|{2,}/g, '|');
+        
+        // 6. 清除首尾多余分隔符
+        cleaned = cleaned.replace(/^(----|\|)+/, '');
+        cleaned = cleaned.replace(/(----|\|)+$/, '');
+        
+        return cleaned;
+    }
+
+    /**
+     * 解析清洗后的字符串，仅支持两种格式
+     * @returns {object} { fullFields, fullLabels, formatName, tokenIndex }
+     */
+    function parseSupportedFormats(cleanedRaw) {
+        if (!cleanedRaw.includes("----")) {
+            throw new Error("❌ 无效格式：必须包含 '----' 作为主分隔符。");
+        }
+        
+        const dashParts = cleanedRaw.split("----");
+        const segmentCount = dashParts.length;
+        
+        if (segmentCount !== 6) {
+            throw new Error(`⚠️ 主分隔符 '----' 分割后得到 ${segmentCount} 段，要求 6 段。`);
+        }
+        
+        const fourthSegment = dashParts[3];
+        const hasPipe = fourthSegment && fourthSegment.includes("|");
+        
+        // 嵌套格式 -> 8个字段
+        if (hasPipe) {
+            const subParts = fourthSegment.split("|");
+            if (subParts.length !== 3) {
+                throw new Error(`❌ 嵌套格式错误：第4段需要3个竖线分隔值，实际 ${subParts.length} 个。`);
+            }
+            const fullFields = [
+                dashParts[0], dashParts[1], dashParts[2],
+                subParts[0], subParts[1], subParts[2],
+                dashParts[4], dashParts[5]
+            ];
+            const fullLabels = ["用户名", "密码", "验证邮箱", "邮箱密码", "辅邮", "辅邮密码", "2FA(密钥)", "token"];
+            const formatName = "📘 格式B（横线嵌套·用户名/密码/验证邮箱/邮箱密码|辅邮|辅邮密码/2FA(密钥)/token）";
+            return { fullFields, fullLabels, formatName, tokenIndex: 7 };
+        } 
+        // 纯横线格式 -> 6个字段
+        else {
+            for (let i = 0; i < dashParts.length; i++) {
+                if (dashParts[i].includes("|")) {
+                    throw new Error(`❌ 纯横线格式字段内不能包含竖线 '|'，第${i+1}段包含了竖线。`);
+                }
+            }
+            const fullFields = [
+                dashParts[0], dashParts[1], dashParts[2],
+                dashParts[3], dashParts[4], dashParts[5]
+            ];
+            const fullLabels = ["用户名", "密码", "邮箱", "邮箱密码", "2FA(密钥)", "token"];
+            const formatName = "📗 格式X（6段纯横线·账号/密码/邮箱/邮箱密码/2FA(密钥)/token）";
+            return { fullFields, fullLabels, formatName, tokenIndex: 5 };
+        }
+    }
+    
+    // 复制功能（独立函数，通过事件委托或全局调用）
+    async function copyResultToClipboard() {
+        if (!currentResultText) {
+            alert("没有可复制的内容，请先点击「解析」按钮");
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(currentResultText);
+            const copyBtn = document.getElementById('dynamicCopyBtn');
+            if (copyBtn) {
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅ 已复制！';
+                setTimeout(() => {
+                    if (copyBtn) copyBtn.textContent = originalText;
+                }, 1800);
+            } else {
+                alert("复制成功！");
+            }
+        } catch (err) {
+            console.error("复制失败:", err);
+            // 降级方案：使用传统方法
+            try {
+                const textarea = document.createElement('textarea');
+                textarea.value = currentResultText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert("复制成功！");
+            } catch (fallbackErr) {
+                alert("复制失败，请手动选择文本复制");
+            }
+        }
+    }
+    
+    // 核心渲染函数
+    function parseAndRender() {
+        const rawInput = document.getElementById('inputText').value;
+        const outputDiv = document.getElementById('outputArea');
+        const detectedSpan = document.getElementById('detectedFormat');
+        
+        if (!rawInput || rawInput.trim() === "") {
+            outputDiv.innerHTML = '<span style="color:#64748b;">📭 请输入或粘贴账号字符串</span>';
+            outputDiv.classList.remove('error');
+            detectedSpan.innerHTML = '⚙️ 等待输入...';
+            currentResultText = "";
+            return;
+        }
+        
+        try {
+            const cleanedRaw = smartCleanSeparators(rawInput);
+            
+            if (cleanedRaw === "") {
+                throw new Error("清洗后字符串为空，可能仅包含无效分隔符");
+            }
+            
+            const { fullFields, fullLabels, formatName, tokenIndex } = parseSupportedFormats(cleanedRaw);
+            
+            // 验证字段完整性
+            for (let i = 0; i < fullFields.length; i++) {
+                if (fullFields[i] === undefined || fullFields[i] === null) {
+                    throw new Error(`解析字段缺失，第${i+1}个字段无效。`);
+                }
+            }
+            
+            // 删除最后的 token 字段
+            const fieldsWithoutToken = fullFields.slice(0, tokenIndex);
+            const labelsWithoutToken = fullLabels.slice(0, tokenIndex);
+            const removedTokenValue = fullFields[tokenIndex];
+            
+            // 生成带标签的结果
+            const labeledParts = labelsWithoutToken.map((label, idx) => {
+                const val = fieldsWithoutToken[idx] !== undefined ? fieldsWithoutToken[idx] : "";
+                return `${label}：${val}`;
+            });
+            const finalResult = labeledParts.join("----");
+            
+            // 存储到全局变量，供复制使用
+            currentResultText = finalResult;
+            
+            detectedSpan.innerHTML = `✅ 识别为：${formatName} | 🧹 已清理分隔符 | ✂️ 已删除token`;
+            
+            const cleaningNote = (rawInput !== cleanedRaw) ? 
+                `<div style="background:#eef2ff; margin-bottom: 12px; padding: 8px 14px; border-radius: 16px; font-size:12px;">🧼 已智能修复多余分隔符。</div>` : 
+                `<div style="background:#f1f5f9; margin-bottom: 10px; padding: 6px 12px; border-radius: 14px; font-size:12px;">✓ 格式规整，无需额外清理。</div>`;
+            
+            const tokenDeleteNotice = `<div style="background:#fef9e3; margin-bottom: 12px; padding: 8px 14px; border-radius: 16px; font-size:12px; border-left:3px solid #eab308;">✂️ 已删除最后的 token 字段（原始值: "${escapeHtml(removedTokenValue)}"）</div>`;
+            
+            outputDiv.innerHTML = `
+                ${cleaningNote}
+                ${tokenDeleteNotice}
+                <div><span class="label">🏷️ 带标签解析结果（已删除token）：</span></div>
+                <pre style="margin:12px 0 12px; background:#0f172a; color:#e2e8f0; padding:14px; border-radius:20px; overflow-x:auto; font-family: monospace; font-size:13px; white-space:pre-wrap;">${escapeHtml(finalResult)}</pre>
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:space-between;">
+                    <button id="dynamicCopyBtn" class="copy-btn-inside" style="background:#10b981;">📋 一键复制结果（无Token）</button>
+                    <span style="font-size:12px; color:#2d6a4f;">保留字段数: ${fieldsWithoutToken.length} | 已移除token</span>
+                </div>
+            `;
+            outputDiv.classList.remove('error');
+            
+            // 绑定复制按钮事件 - 使用更可靠的方式：先移除旧的监听器，再添加
+            const copyBtn = document.getElementById('dynamicCopyBtn');
+            if (copyBtn) {
+                // 移除所有旧的事件监听器（通过替换克隆）
+                const newCopyBtn = copyBtn.cloneNode(true);
+                copyBtn.parentNode.replaceChild(newCopyBtn, copyBtn);
+                // 绑定新的事件
+                newCopyBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    copyResultToClipboard();
+                });
+            }
+            
+        } catch (err) {
+            detectedSpan.innerHTML = '❌ 格式不支持 / 解析失败';
+            outputDiv.innerHTML = `
+                <div style="color:#b91c1c; font-weight:500;">⚠️ 解析错误</div>
+                <div style="margin-top:8px;">${escapeHtml(err.message)}</div>
+                <div style="margin-top:12px; background:#fff1f0; padding:8px 14px; border-radius:16px; font-size:12px;">
+                💡 仅支持以下两种格式：<br>
+                1️⃣ 用户名----密码----验证邮箱----邮箱密码|辅邮|辅邮密码----2FA(密钥)----token<br>
+                2️⃣ 用户名----密码----邮箱----邮箱密码----2FA(密钥)----token
+                </div>
+            `;
+            outputDiv.classList.add('error');
+            currentResultText = "";
+        }
+    }
+    
+    function fullClear() {
+        const textarea = document.getElementById('inputText');
+        textarea.value = '';
+        const outputDiv = document.getElementById('outputArea');
+        const detectedSpan = document.getElementById('detectedFormat');
+        outputDiv.innerHTML = '<span style="color:#64748b;">🧹 已清空，请粘贴支持的格式</span>';
+        outputDiv.classList.remove('error');
+        detectedSpan.innerHTML = '⚙️ 等待输入...';
+        currentResultText = "";
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // 绑定主要事件
+    document.getElementById('parseBtn').addEventListener('click', parseAndRender);
+    document.getElementById('clearBtn').addEventListener('click', fullClear);
+    
+    // 快捷键 Ctrl+Enter 解析
+    const inputArea = document.getElementById('inputText');
+    inputArea.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            parseAndRender();
+        }
+    });
+    
+    console.log("解析器已就绪 | 复制功能已修复，使用独立的 copyResultToClipboard 函数");
+</script>
+</body>
+</html>
