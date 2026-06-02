@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>莆田匠心潮品工作室 | 匠心之选 · 值得信赖</title>
+    <style>
+        /* CSS 变量 - 默认跟随系统深色/浅色 */
+        :root {
+            --bg-body: #0a0a0a;
+            --bg-container: #111;
+            --bg-card: #1a1a1a;
+            --bg-card-secondary: #0f0f0f;
+            --bg-input: #2a2a2a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #ccc;
+            --text-muted: #888;
+            --border-color: #2a2a2a;
+            --accent-green: #00e676;
+            --accent-pink: #ff3b6f;
+            --accent-green-dark: #00c853;
+            --accent-pink-dark: #e62e5c;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --warning-bg: #2a1a1a;
+            --warning-border: #ff3b6f;
+            --warning-text: #ffb3c6;
+            --benefit-icon-bg: #2a2a2a;
+            --btn-copy-bg: #00e676;
+            --btn-copy-text: #0a0a0a;
+            --btn-copy-hover: #00c853;
+            --btn-copy-pink-bg: #ff3b6f;
+            --btn-copy-pink-text: white;
+            --btn-copy-pink-hover: #e62e5c;
+            --footer-bg: #0f0f0f;
+            --footer-text: #aaa;
+            --footer-link: #00e676;
+            --text-bg: rgba(0, 0, 0, 0.55);
+            --fab-bg: rgba(0, 0, 0, 0.8);
+            --fab-text: #ffffff;
+            --fab-border: #00e676;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-body: #f5f5f7;
+                --bg-container: #ffffff;
+                --bg-card: #f8f8fa;
+                --bg-card-secondary: #efeff2;
+                --bg-input: #e8e8ec;
+                --text-primary: #1a1a1e;
+                --text-secondary: #3a3a42;
+                --text-muted: #6c6c74;
+                --border-color: #e0e0e6;
+                --accent-green: #00a86b;
+                --accent-pink: #e6205a;
+                --accent-green-dark: #008c58;
+                --accent-pink-dark: #c4104a;
+                --shadow: 0 4px 12px rgba(0,0,0,0.05);
+                --warning-bg: #ffe8e8;
+                --warning-border: #ff6b8a;
+                --warning-text: #b33b4f;
+                --benefit-icon-bg: #e0e0e6;
+                --btn-copy-bg: #00a86b;
+                --btn-copy-text: #ffffff;
+                --btn-copy-hover: #008c58;
+                --btn-copy-pink-bg: #e6205a;
+                --btn-copy-pink-text: #ffffff;
+                --btn-copy-pink-hover: #c4104a;
+                --footer-bg: #efeff2;
+                --footer-text: #6c6c74;
+                --footer-link: #00a86b;
+                --text-bg: rgba(0, 0, 0, 0.65);
+                --fab-bg: rgba(255, 255, 255, 0.95);
+                --fab-text: #1a1a1e;
+                --fab-border: #00a86b;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-primary);
+            line-height: 1.5;
+            padding: 0 0 32px 0;
+            transition: background-color 0.3s, color 0.2s;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-container);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* 顶部横幅 - 微信绿 */
+        .top-banner {
+            background: #07C160;
+            padding: 2px 20px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 16px;
+            color: white;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.1);
+            z-index: 2;
+        }
+        .top-banner:active {
+            transform: scale(0.98);
+            background: #06ad56;
+        }
+
+        /* 悬浮按钮 */
+        .floating-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 560px;
+            background: var(--fab-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--fab-border);
+            border-radius: 60px;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--fab-text);
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            transition: all 0.2s ease;
+        }
+        .floating-btn:active {
+            transform: translateX(-50%) scale(0.97);
+            background-color: var(--accent-green);
+            color: #0a0a0a;
+        }
+
+        /* 海报通用容器（无蒙版） */
+        .poster-block {
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 220px;
+        }
+        /* 文字背景衬底样式（与首页海报一致） */
+        .poster-text-bg {
+            background: var(--text-bg);
+            backdrop-filter: blur(2px);
+            padding: 8px 20px;
+            border-radius: 60px;
+            display: inline-block;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: white;
+            line-height: 1.4;
+        }
+
+        /* 第一张海报（hero） */
+        .hero {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            text-align: center;
+            color: white;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero .overlay {
+            width: 100%;
+            padding: 40px 24px;
+        }
+
+        /* 弹跳动画 */
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.7);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .hero .brand {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: var(--text-bg);
+            padding: 8px 20px;
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            animation: bounceIn 0.6s ease-out forwards;
+        }
+        .hero .brand span {
+            background: var(--accent-pink);
+            color: white;
+            font-size: 14px;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        .hero .slogan {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            display: inline-block;
+            padding: 8px 20px;
+            background: var(--text-bg);
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            animation: bounceIn 0.6s ease-out 0.2s forwards;
+            opacity: 0; /* 初始隐藏，动画结束后显示 */
+            transform: scale(0.7);
+            animation-fill-mode: forwards;
+        }
+        /* 修复品牌初始可见性 */
+        .hero .brand {
+            opacity: 0;
+            transform: scale(0.7);
+            animation-fill-mode: forwards;
+        }
+
+        /* 其余卡片样式不变 */
+        .intro-card {
+            background: var(--bg-card);
+            margin: 20px 16px;
+            padding: 20px 18px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+        .intro-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--accent-pink);
+        }
+        .intro-name::before {
+            content: "👤";
+            margin-right: 8px;
+        }
+        .intro-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+            line-height: 1.55;
+        }
+        .warning-note {
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 12px 15px;
+            border-radius: 14px;
+            margin: 16px 0;
+            font-size: 14px;
+            color: var(--warning-text);
+        }
+        .brand-quote {
+            margin-top: 18px;
+            background: var(--bg-card-secondary);
+            padding: 14px;
+            border-radius: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent-green);
+            border: 1px solid var(--border-color);
+        }
+
+        .tips-section {
+            margin: 24px 16px;
+        }
+        .section-title {
+            font-size: 20px;
+            font-weight: 800;
+            background: var(--accent-green);
+            color: var(--btn-copy-text);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            margin-bottom: 18px;
+        }
+        .tip-item {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+        .tip-title {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--accent-green);
+            margin-bottom: 10px;
+        }
+        .tip-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        .wechat-card {
+            background: var(--bg-card);
+            margin: 20px 16px;
+            border-radius: 28px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        .copy-tip {
+            font-size: 14px;
+            background: var(--bg-input);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: var(--accent-green);
+            margin-bottom: 14px;
+        }
+        .btn-copy {
+            background-color: var(--btn-copy-bg);
+            border: none;
+            color: var(--btn-copy-text);
+            font-weight: 700;
+            font-size: 16px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-copy:active {
+            transform: scale(0.97);
+            background-color: var(--btn-copy-hover);
+        }
+        .btn-copy-orange {
+            background-color: var(--btn-copy-pink-bg);
+            color: var(--btn-copy-pink-text);
+        }
+        .btn-copy-orange:active {
+            background-color: var(--btn-copy-pink-hover);
+        }
+        .wechat-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        .benefits {
+            background: var(--bg-card);
+            margin: 0 16px 24px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .benefit-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .benefit-icon {
+            background: var(--benefit-icon-bg);
+            width: 32px;
+            height: 32px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--accent-green);
+        }
+        .benefit-text {
+            color: var(--text-secondary);
+        }
+
+        .quality-row {
+            background: var(--bg-card);
+            margin: 24px 16px;
+            border-radius: 28px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .quality-item {
+            flex: 1;
+            background: var(--bg-card-secondary);
+            border-radius: 40px;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            color: var(--accent-green);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .quality-item:active {
+            transform: scale(0.97);
+            background-color: var(--bg-input);
+        }
+        .quality-item .badge {
+            background: var(--accent-green);
+            color: var(--btn-copy-text);
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .customer-service-item {
+            background: var(--accent-pink);
+            border-radius: 40px;
+            padding: 10px 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .customer-service-item:active {
+            transform: scale(0.97);
+            background-color: var(--accent-pink-dark);
+        }
+
+        @media (max-width: 500px) {
+            .quality-row {
+                flex-direction: column;
+            }
+            .quality-item, .customer-service-item {
+                width: 100%;
+            }
+        }
+
+        .bottom-poster-wrapper {
+            padding: 0 16px;
+            margin: 0 0 16px 0;
+        }
+        .bottom-poster-wrapper .poster-block {
+            margin: 0;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .bottom-footer {
+            background: var(--footer-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 24px 20px;
+            text-align: center;
+            color: var(--footer-text);
+            margin-top: 0;
+        }
+        .bottom-footer .wechat-small {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--footer-link);
+            margin: 12px 0;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .copyright {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 12px;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            color: var(--accent-green);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            z-index: 1001;
+            pointer-events: none;
+            transition: 0.2s;
+            opacity: 0;
+            border: 1px solid var(--accent-green);
+            box-shadow: var(--shadow);
+            white-space: nowrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="loading">加载中...</div>
+</div>
+<div id="toastMsg" class="toast-msg"></div>
+
+<script>
+    // ==================== 内容配置 ====================
+    const siteData = {
+        brand: "莆田匠心潮品工作室",
+        slogan: "揭秘！莆田鞋和大牌的区别 · 带你了解真正的莆田鞋",
+        intro: "大家好，先自我介绍一下，鄙人是匠心潮品工作室的创始人-小航，为您推荐各种引领时代的潮鞋潮服。\n\n首先声明本人是土生土长的莆田人，我们工作室从接触莆田鞋十年来，结识了不少喜欢潮鞋潮服的朋友。有很多潮流爱好者都因为大牌鞋子动辄上千上万的价格，让人望尘莫及。但是莆田鞋的出现，让很多喜欢潮鞋潮服的朋友满足了穿大牌潮鞋的愿望。",
+        warning: "也正是因为莆田鞋的火爆，越来越被熟知，一些无良商家为了更大的利益以次充好。扰乱鞋子市场。卖家有良心，给你出好的货，卖家无良，垃圾货一样发给你，大部分买家被无良卖家忽悠都不知道，花买好钱鞋结果给你整垃圾货。",
+        tip1Title: "❌ ① 不存在什么工厂直销",
+        tip1Desc: "切记不要相信什么低价工厂直销，都是骗子。莆田鞋的款式有好几千种，敢问是多大的工厂才能生产这么多鞋子，很多事情只要多思考思考就能分辨谁是谁非了。",
+        tip2Title: "✅ ② 能否支持七天无理由退换货",
+        tip2Desc: "一般靠谱的卖家都是支持七天无理由退换货，拿到货不满意直接退货退款。",
+        tip3Title: "⚠️ ③ 版本吹嘘 · 一分钱一分货",
+        tip3Desc: "各种版本吹的天花乱坠，各家都说是最好的版本。一分钱一分货，想花一两百买到好的鞋子是不可能的。便宜没好货这个真理永恒不变，黑心杀猪的卖家也不在少数，所谓一两百的“顶级莆田鞋”基本不存在。",
+        tip4Title: "🚫 ④ 警惕夸张文案 · 远离虚假宣传",
+        tip4Desc: "买鞋时一定要记住：文案太夸张的、所谓工厂直销的、声称正牌尾单的，绝对不要心存侥幸。天上不会掉馅饼，过度的营销背后往往是陷阱。",
+        tip5Title: "💎 ⑤ 永远铭记：价值决定价格",
+        tip5Desc: "永远记住一分钱一分货。好的鞋子价格偏低可以理解，但价格大幅度偏低，必定有诈。关于莆田鞋的科普就到这里，最后也想告诉大家：莆田鞋并不意味着绝对便宜，便宜没好货依然有道理。相比正牌它价格有优势，但如果差距太大，质量绝对跟不上。",
+        wechat: "c0225xx",
+        posterTop: "https://s41.ax1x.com/2026/06/02/pmESh2q.jpg",
+        posterWarning: "https://picsum.photos/id/26/600/200",
+        posterConclusion: "https://s41.ax1x.com/2026/06/02/pmESWPs.jpg",
+        posterMid: "https://s41.ax1x.com/2026/06/02/pmESfGn.jpg",
+        posterBottom: "https://s41.ax1x.com/2026/06/02/pmES25j.jpg",
+        benefits: [
+            "添加微信，了解更多福利",
+            "获取最新潮鞋实拍 · 新款发布",
+            "享受一对一高端品质保障",
+            "支持七天无理由无忧退换",
+        ]
+    };
+    // ==================================================================
+
+    function showToast(msg) {
+        const toast = document.getElementById('toastMsg');
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+    }
+
+    async function copyAndJumpToWechat(wechat) {
+        if (!wechat) return;
+        try {
+            await navigator.clipboard.writeText(wechat);
+            showToast(`✅ 已复制微信号: ${wechat}`);
+            setTimeout(() => { window.location.href = 'weixin://'; }, 200);
+        } catch(e) {
+            const ta = document.createElement('textarea');
+            ta.value = wechat;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast(`📋 已复制微信号: ${wechat}`);
+            setTimeout(() => { window.location.href = 'weixin://'; }, 200);
+        }
+    }
+
+    function escape(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/\n/g, '<br>');
+    }
+
+    function renderPage() {
+        const wechatNum = siteData.wechat;
+        const posterTop = siteData.posterTop;
+        const posterWarning = siteData.posterWarning;
+        const posterConclusion = siteData.posterConclusion;
+        const posterMid = siteData.posterMid;
+        const posterBottom = siteData.posterBottom;
+
+        const html = `
+            <div class="top-banner" id="topBanner">
+                📱 点击添加微信，了解更多福利<br>- 高端潮鞋一手货源 -
+            </div>
+
+            <!-- 第一张海报 -->
+            <div class="hero" style="background-image: url('${escape(posterTop)}');">
+                <div class="overlay">
+                    <div class="brand">${escape(siteData.brand)}<span>高端品质</span></div>
+                    <div class="slogan">${escape(siteData.slogan)}</div>
+                </div>
+            </div>
+
+            <div class="intro-card">
+                <div class="intro-name">匠心潮品 | 匠心之选 · 值得信赖</div>
+                <div class="intro-text">${escape(siteData.intro)}</div>
+                <div class="warning-note">⚠️ ${escape(siteData.warning)}</div>
+                <!-- 警告框下方海报 -->
+                <div class="poster-block" style="background-image: url('${escape(posterWarning)}'); min-height: 150px; margin: 16px 0; border-radius: 20px;">
+                    <div class="poster-text-bg">📢 品质保障 · 售后无忧 📢</div>
+                </div>
+                <div class="poster-block" style="background-image: url('${escape(posterConclusion)}'); min-height: 150px; margin: 16px 0; border-radius: 20px;">
+                    <div class="poster-text-bg">✨ 一份匠心 · 十分诚心 ✨</div>
+                </div>
+                <div class="intro-text">因此，买莆田鞋还是要找到一个正规的渠道，靠谱的卖家比较好。对于大家所担心的问题，我们工作室在此整理几点注意事项，避免大家踩雷。</div>
+                <div class="brand-quote">-只做高端品质-<br>不为输赢，只为坚持<br>一手莆田鞋购买渠道 · 款式实拍新款发布</div>
+            </div>
+
+            <div class="tips-section">
+                <div class="section-title">📌 避坑指南·注意这几点</div>
+                <div class="tip-item">
+                    <div class="tip-title">${escape(siteData.tip1Title)}</div>
+                    <div class="tip-desc">${escape(siteData.tip1Desc)}</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-title">${escape(siteData.tip2Title)}</div>
+                    <div class="tip-desc">${escape(siteData.tip2Desc)}</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-title">${escape(siteData.tip3Title)}</div>
+                    <div class="tip-desc">${escape(siteData.tip3Desc)}</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-title">${escape(siteData.tip4Title)}</div>
+                    <div class="tip-desc">${escape(siteData.tip4Desc)}</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-title">${escape(siteData.tip5Title)}</div>
+                    <div class="tip-desc">${escape(siteData.tip5Desc)}</div>
+                </div>
+            </div>
+
+            <!-- 第二张海报 -->
+            <div class="poster-block" style="background-image: url('${escape(posterMid)}');">
+                <div class="poster-text-bg">✨ 高端实拍 · 品质保障 ✨</div>
+            </div>
+
+            <div class="wechat-card">
+                <div class="copy-tip">📲 长按复制微信号，添加好友享福利</div>
+                <button class="btn-copy" id="copyWechatBtn">📋 复制微信号 ${escape(wechatNum)}</button>
+                <div class="wechat-note">* 添加请备注"潮鞋"，获取高端实拍款式</div>
+            </div>
+
+            <div class="benefits">
+                ${siteData.benefits.map(b => `<div class="benefit-item"><div class="benefit-icon">🎁</div><div class="benefit-text">${escape(b)}</div></div>`).join('')}
+            </div>
+
+            <div class="quality-row">
+                <div class="quality-item" id="qualityItem1">
+                    <span>🔍</span> 专业质检团队
+                    <span class="badge">质量保证</span>
+                </div>
+                <div class="quality-item" id="qualityItem2">
+                    <span>👥</span> 回头客超多
+                </div>
+                <div class="customer-service-item" id="customerServiceBtn">
+                    🙋‍♂️ 添加我们 · 靠谱卖家
+                </div>
+            </div>
+
+            <div class="wechat-card" style="border-color: var(--accent-pink);">
+                <div style="font-weight:800; margin-bottom:8px; color:var(--accent-pink);">📱 客服微信 · 唯一渠道</div>
+                <button class="btn-copy btn-copy-orange" id="copyWechatBtn2">➕ 复制微信号 ${escape(wechatNum)}</button>
+                <div class="wechat-note">长按复制，开启品质潮鞋之旅</div>
+            </div>
+
+            <div style="margin: 0 16px 20px; text-align:center; background:var(--bg-card-secondary); padding:12px; border-radius:40px; border:1px solid var(--border-color);">
+                <span style="font-weight:600; color:var(--accent-green);">💎 微信号：${escape(wechatNum)}  |  一手货源 · 高端版本</span>
+            </div>
+
+            <!-- 第三张海报 -->
+            <div class="bottom-poster-wrapper">
+                <div class="poster-block" style="background-image: url('${escape(posterBottom)}'); min-height: 160px;">
+                    <div class="poster-text-bg">🔥 添加客服 · 解锁粉丝福利 🔥</div>
+                </div>
+            </div>
+
+            <div class="bottom-footer">
+                <div>${escape(siteData.brand)} · 坚持高端品质</div>
+                <div class="wechat-small" id="footerWechat">官方微信号：${escape(wechatNum)}</div>
+                <div>长按复制微信号，添加了解福利</div>
+                <div class="copyright">© 专注莆田鞋高端版本 | 诚信经营 售后无忧</div>
+            </div>
+        `;
+
+        document.getElementById('app').innerHTML = html;
+
+        const wechat = wechatNum;
+        document.getElementById('topBanner')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('copyWechatBtn')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('copyWechatBtn2')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('footerWechat')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('qualityItem1')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('qualityItem2')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+        document.getElementById('customerServiceBtn')?.addEventListener('click', () => copyAndJumpToWechat(wechat));
+    }
+
+    renderPage();
+
+    setTimeout(() => {
+        if (!document.getElementById('floatingBtn')) {
+            const btn = document.createElement('div');
+            btn.id = 'floatingBtn';
+            btn.className = 'floating-btn';
+            btn.innerHTML = '📱 一键添加微信 · 领取福利';
+            document.body.appendChild(btn);
+            btn.addEventListener('click', () => {
+                copyAndJumpToWechat(siteData.wechat);
+            });
+        }
+    }, 100);
+</script>
+</body>
+</html>
